@@ -1,32 +1,29 @@
 mappings:
+  # Airflow task metrics
+  - match: "airflow.dag_processing.*"
+    name: "airflow_dag_processing"
+    labels:
+      type: "$1"
+
+  - match: "airflow.executor.*"
+    name: "airflow_executor"
+    labels:
+      type: "$1"
+
+  - match: "airflow.scheduler.*"
+    name: "airflow_scheduler"
+    labels:
+      type: "$1"
+
   - match: "airflow.dagrun.*.*.duration"
-    name: "airflow_dagrun_duration_seconds"
-    timer_type: histogram
+    name: "airflow_dagrun_duration"
     labels:
       dag_id: "$1"
       run_id: "$2"
 
   - match: "airflow.task.*.*.*.duration"
-    name: "airflow_task_duration_seconds"
-    timer_type: histogram
+    name: "airflow_task_duration"
     labels:
       dag_id: "$1"
       task_id: "$2"
-      run_id: "$3"
-
-  - match: "airflow.task.*.*.*.success"
-    name: "airflow_task_success_total"
-    labels:
-      dag_id: "$1"
-      task_id: "$2"
-      run_id: "$3"
-
-  - match: "airflow.scheduler.*"
-    name: "airflow_scheduler_${1}"
-    labels:
-      component: "scheduler"
-
-  - match: "airflow.*.*"
-    name: "airflow_${1}_${2}"
-    labels:
-      job: "airflow"
+      state: "$3"

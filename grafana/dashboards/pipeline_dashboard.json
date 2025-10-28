@@ -1,0 +1,57 @@
+{
+  "dashboard": {
+    "title": "Pipeline Reliability Dashboard",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Pipeline Success Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "100 * (1 - avg(pipeline_task_status))",
+            "legendFormat": "Success Rate %"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Records Processed",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "pipeline_records_processed_total",
+            "legendFormat": "{{task_name}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 18, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Task Duration",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "pipeline_task_duration_seconds",
+            "legendFormat": "{{task_name}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Data Quality Score",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "pipeline_data_quality_score",
+            "legendFormat": "Quality %"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      }
+    ],
+    "refresh": "30s",
+    "time": {"from": "now-1h", "to": "now"}
+  }
+}
