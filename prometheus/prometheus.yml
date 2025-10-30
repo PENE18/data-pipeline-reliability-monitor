@@ -1,36 +1,47 @@
-global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
+# Prometheus Configuration for Data Pipeline Monitoring
 
-# Alerting configuration
+global:
+  scrape_interval: 15s       # Scrape metrics every 15 seconds
+  evaluation_interval: 15s   # Evaluate rules every 15 seconds
+  external_labels:
+    cluster: 'data-pipeline'
+    environment: 'local'
+
+# Alerting configuration (optional - can add Alertmanager later)
 alerting:
   alertmanagers:
     - static_configs:
         - targets: []
 
-# Alert rules
+# Alert rules files (optional - can add alert rules)
 rule_files:
-  - 'alerts.yml'
+  # - 'alerts.yml'
 
 # Scrape configurations
 scrape_configs:
-  # Prometheus itself
+  # Scrape Prometheus itself
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
 
-  # Pushgateway (for batch job metrics)
+  # Scrape Pushgateway (for batch job metrics from Airflow)
   - job_name: 'pushgateway'
-    honor_labels: true
+    honor_labels: true  # Use labels from pushed metrics
     static_configs:
       - targets: ['pushgateway:9091']
+        labels:
+          service: 'pushgateway'
 
-  # StatsD Exporter (Airflow metrics)
+  # Scrape StatsD Exporter (Airflow system metrics)
   - job_name: 'statsd-exporter'
     static_configs:
       - targets: ['statsd-exporter:9102']
+        labels:
+          service: 'airflow'
 
-  # PostgreSQL (if using postgres_exporter)
-  - job_name: 'postgres'
-    static_configs:
-      - targets: ['postgres:5432']
+  # Optional: Add more exporters as needed
+  # - job_name: 'postgres'
+  #   static_configs:
+  #     - targets: ['postgres-exporter:9187']

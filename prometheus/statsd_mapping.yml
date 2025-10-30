@@ -1,29 +1,61 @@
+# StatsD to Prometheus Metrics Mapping
+# Maps Airflow's StatsD metrics to Prometheus format
+
 mappings:
-  # Airflow task metrics
+  # DAG processing metrics
   - match: "airflow.dag_processing.*"
     name: "airflow_dag_processing"
     labels:
       type: "$1"
 
+  # Executor metrics
   - match: "airflow.executor.*"
     name: "airflow_executor"
     labels:
       type: "$1"
 
+  # Scheduler metrics
   - match: "airflow.scheduler.*"
     name: "airflow_scheduler"
     labels:
       type: "$1"
 
+  # DAG run duration
   - match: "airflow.dagrun.*.*.duration"
-    name: "airflow_dagrun_duration"
+    name: "airflow_dagrun_duration_seconds"
     labels:
       dag_id: "$1"
       run_id: "$2"
 
+  # Task duration
   - match: "airflow.task.*.*.*.duration"
-    name: "airflow_task_duration"
+    name: "airflow_task_duration_seconds"
     labels:
       dag_id: "$1"
       task_id: "$2"
       state: "$3"
+
+  # Task success/failure counts
+  - match: "airflow.task.*.*.success"
+    name: "airflow_task_success_total"
+    labels:
+      dag_id: "$1"
+      task_id: "$2"
+
+  - match: "airflow.task.*.*.failure"
+    name: "airflow_task_failure_total"
+    labels:
+      dag_id: "$1"
+      task_id: "$2"
+
+  # Pool metrics
+  - match: "airflow.pool.*.*.open_slots"
+    name: "airflow_pool_open_slots"
+    labels:
+      pool: "$1"
+
+  # Default mapping for any other Airflow metrics
+  - match: "airflow.*"
+    name: "airflow_metric"
+    labels:
+      metric: "$1"

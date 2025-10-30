@@ -1,6 +1,16 @@
 {
   "dashboard": {
-    "title": "Pipeline Reliability Dashboard",
+    "title": "Data Pipeline Reliability Dashboard",
+    "uid": "pipeline-reliability",
+    "tags": ["pipeline", "etl", "monitoring"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "30s",
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
     "panels": [
       {
         "id": 1,
@@ -9,49 +19,288 @@
         "targets": [
           {
             "expr": "100 * (1 - avg(pipeline_task_status))",
-            "legendFormat": "Success Rate %"
+            "legendFormat": "Success Rate",
+            "refId": "A"
           }
         ],
-        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        },
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value",
+          "justifyMode": "auto",
+          "textMode": "value_and_name"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": 0, "color": "red" },
+                { "value": 90, "color": "yellow" },
+                { "value": 95, "color": "green" }
+              ]
+            }
+          }
+        }
       },
       {
         "id": 2,
-        "title": "Records Processed",
-        "type": "graph",
-        "targets": [
-          {
-            "expr": "pipeline_records_processed_total",
-            "legendFormat": "{{task_name}}"
-          }
-        ],
-        "gridPos": {"h": 8, "w": 18, "x": 6, "y": 0}
-      },
-      {
-        "id": 3,
-        "title": "Task Duration",
-        "type": "graph",
-        "targets": [
-          {
-            "expr": "pipeline_task_duration_seconds",
-            "legendFormat": "{{task_name}}"
-          }
-        ],
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
-      },
-      {
-        "id": 4,
         "title": "Data Quality Score",
         "type": "gauge",
         "targets": [
           {
             "expr": "pipeline_data_quality_score",
-            "legendFormat": "Quality %"
+            "legendFormat": "Quality Score",
+            "refId": "A"
           }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 0
+        },
+        "options": {
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": 0, "color": "red" },
+                { "value": 70, "color": "yellow" },
+                { "value": 95, "color": "green" }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Records Processed (Last Run)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(pipeline_records_processed_total)",
+            "legendFormat": "Total Records",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 12,
+          "y": 0
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": 0, "color": "red" },
+                { "value": 100, "color": "yellow" },
+                { "value": 500, "color": "green" }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Pipeline Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "pipeline_overall_status",
+            "legendFormat": "Status",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 18,
+          "y": 0
+        },
+        "options": {
+          "graphMode": "none",
+          "colorMode": "background",
+          "textMode": "value_and_name"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "options": {
+                  "0": { "text": "SUCCESS", "color": "green" },
+                  "1": { "text": "FAILURE", "color": "red" }
+                },
+                "type": "value"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Records Processed Over Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "pipeline_records_processed_total",
+            "legendFormat": "{{task_name}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          },
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "fillOpacity": 10
+            },
+            "unit": "short"
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": "Task Duration by Stage",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "pipeline_task_duration_seconds",
+            "legendFormat": "{{task_name}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          },
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "bars",
+              "fillOpacity": 80
+            },
+            "unit": "s"
+          }
+        }
+      },
+      {
+        "id": 7,
+        "title": "Task Success/Failure Status",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "pipeline_task_status",
+            "legendFormat": "{{task_name}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 17
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "points",
+              "pointSize": 8
+            },
+            "mappings": [
+              {
+                "options": {
+                  "0": { "text": "SUCCESS", "color": "green" },
+                  "1": { "text": "FAILURE", "color": "red" }
+                },
+                "type": "value"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "Quality Score Trend",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "pipeline_data_quality_score",
+            "legendFormat": "Quality Score",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 17
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "fillOpacity": 20
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": 0, "color": "transparent" },
+                { "value": 95, "color": "green" }
+              ]
+            }
+          }
+        }
       }
-    ],
-    "refresh": "30s",
-    "time": {"from": "now-1h", "to": "now"}
+    ]
   }
 }

@@ -1,3 +1,6 @@
+# Grafana Datasource Configuration
+# Automatically provisions Prometheus as a datasource
+
 apiVersion: 1
 
 datasources:
@@ -7,3 +10,6 @@ datasources:
     url: http://prometheus:9090
     isDefault: true
     editable: true
+    jsonData:
+      httpMethod: POST
+      timeInterval: 15s
